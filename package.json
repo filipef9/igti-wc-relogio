@@ -1,0 +1,14 @@
+{
+  "name": "igti-wc-relogio",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/filipef9/igti-wc-relogio.git",
+  "author": "filipef9 <filipef9@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "npx browser-sync start --server --no-ui --listen '0.0.0.0' --watch"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.5"
+  }
+}
