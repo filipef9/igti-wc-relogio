@@ -11,6 +11,9 @@
                     <g id="hourPointer" transform="rotate(360, 100, 100)">
                         <path d="M 100 100 V 50" stroke="blue" />
                     </g>
+                    <g id="minutePointer" transform="rotate(360, 100, 100)">
+                        <path d="M 100 100 V 50" stroke="red" />
+                    </g>
                 </svg>
             </div>
         </div>
@@ -27,6 +30,7 @@
             this.analogicDisplay = this.shadowRoot.querySelector('.analogic>svg');
 
             this.hourPointer = this.shadowRoot.getElementById('hourPointer');
+            this.minutePointer = this.shadowRoot.getElementById('minutePointer');
         }
 
         connectedCallback() {
@@ -35,8 +39,11 @@
             this.timer = setInterval(() => {
                 this.digitalDisplay.textContent = getHMSFormatted();
 
-                const transform = `rotate(${h * (360 / 12)}, 100, 100)`;
-                this.hourPointer.setAttribute('transform', transform);
+                const hourTransform = `rotate(${h * (360 / 12)}, 100, 100)`;
+                this.hourPointer.setAttribute('transform', hourTransform);
+
+                const minuteTransform = `rotate(${m * (360 / 60)}, 100, 100)`;
+                this.minutePointer.setAttribute('transform', minuteTransform);
             });
         }
 
