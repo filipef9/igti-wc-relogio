@@ -12,16 +12,19 @@
     analogicTemplate.innerHTML = `
         <div class="display">
             <div class="analogic">
-                <svg height="210" width="500">
-                    <circle cx="100" cy="100" r="60" fill="none" stroke="black"/>
-                    <g id="hourPointer" transform="rotate(360, 100, 100)">
-                        <path d="M 100 100 V 50" stroke="red" />
-                    </g>
-                    <g id="minutePointer" transform="rotate(360, 100, 100)">
-                        <path d="M 100 100 V 50" stroke="green" />
-                    </g>
-                    <g id="secondPointer" transform="rotate(360, 100, 100)">
-                        <path d="M 100 100 V 50" stroke="blue" />
+                <svg height="200" width="200">
+                    <g transform="translate(100, 100)" fill="none">
+                        <circle cx="0" cy="0" r="95" stroke="black" stroke-width="2" />
+
+                        ${[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(angle => 
+                            `<path d="M 0 -90 v -7" transform="rotate(${angle})" stroke="black" stroke-width="4" />`
+                        ).join('\n')}
+
+                        <path id="hourPointer" d="M 0 0 v -75" stroke="black" stroke-width="4" />
+                        <path id="minutePointer" d="M 0 0 v -85" stroke="black" stroke-width="2" />
+                        <circle cx="0" cy="0" r="4" fill="black" stroke="none" />
+                        <path id="secondPointer" d="M 0 0 v -85" stroke="red" stroke-width="2" />
+                        <circle cx="0" cy="0" r="2" fill="red" stroke="none" />
                     </g>
                 </svg>
             </div>
@@ -49,13 +52,13 @@
                 this.timer = setInterval(() => {
                     const {h, m, s} = getHMS();
 
-                    const hourTransform = `rotate(${h * (360 / 12)}, 100, 100)`;
+                    const hourTransform = `rotate(${((h % 12) + (m / 60)) * (360 / 12)})`;
                     this.hourPointer.setAttribute('transform', hourTransform);
 
-                    const minuteTransform = `rotate(${m * (360 / 60)}, 100, 100)`;
+                    const minuteTransform = `rotate(${(m + s / 60) * (360 / 60)})`;
                     this.minutePointer.setAttribute('transform', minuteTransform);
 
-                    const secondTransform = `rotate(${s * (360 / 60)}, 100, 100)`;
+                    const secondTransform = `rotate(${s * (360 / 60)})`;
                     this.secondPointer.setAttribute('transform', secondTransform);
                 }, 1000);
             } 
