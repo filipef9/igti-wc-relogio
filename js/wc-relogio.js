@@ -1,10 +1,16 @@
 (() => {
-    const template = document.createElement('template');
-    template.innerHTML = `
+    const digitalTemplate = document.createElement('template');
+    digitalTemplate.innerHTML = `
         <div class="display">
             <div class="digital">
                 <span></span>
             </div>
+        </div>
+    `;
+
+    const analogicTemplate = document.createElement('template');
+    analogicTemplate.innerHTML = `
+        <div class="display">
             <div class="analogic">
                 <svg height="210" width="500">
                     <circle cx="100" cy="100" r="60" fill="none" stroke="black"/>
@@ -25,32 +31,44 @@
     class WcRelogioElement extends HTMLElement {
         constructor() {
             super();
-            
             this.attachShadow({ mode: 'open' });
-            this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-            this.digitalDisplay = this.shadowRoot.querySelector('.digital>span');
-
-            this.hourPointer = this.shadowRoot.getElementById('hourPointer');
-            this.minutePointer = this.shadowRoot.getElementById('minutePointer');
-            this.secondPointer = this.shadowRoot.getElementById('secondPointer');
         }
 
         connectedCallback() {
-            this.digitalDisplay.textContent = getHMSFormatted();
-            this.timer = setInterval(() => {
-                const {h, m, s} = getHMS();
-                this.digitalDisplay.textContent = getHMSFormatted();
+            const tipo = this.getAttribute("tipo");
+            const isAnalogic = tipo === "analogico";
+            const isDigital = tipo == null || tipo === undefined;
 
-                const hourTransform = `rotate(${h * (360 / 12)}, 100, 100)`;
-                this.hourPointer.setAttribute('transform', hourTransform);
+            if (isAnalogic) {
+                this.shadowRoot.appendChild(analogicTemplate.content.cloneNode(true));
 
-                const minuteTransform = `rotate(${m * (360 / 60)}, 100, 100)`;
-                this.minutePointer.setAttribute('transform', minuteTransform);
+                this.hourPointer = this.shadowRoot.getElementById('hourPointer');
+                this.minutePointer = this.shadowRoot.getElementById('minutePointer');
+                this.secondPointer = this.shadowRoot.getElementById('secondPointer');
 
-                const secondTransform = `rotate(${s * (360 / 60)}, 100, 100)`;
-                this.secondPointer.setAttribute('transform', secondTransform);
-            }, 1000);
+                this.timer = setInterval(() => {
+                    const {h, m, s} = getHMS();
+
+                    const hourTransform = `rotate(${h * (360 / 12)}, 100, 100)`;
+                    this.hourPointer.setAttribute('transform', hourTransform);
+
+                    const minuteTransform = `rotate(${m * (360 / 60)}, 100, 100)`;
+                    this.minutePointer.setAttribute('transform', minuteTransform);
+
+                    const secondTransform = `rotate(${s * (360 / 60)}, 100, 100)`;
+                    this.secondPointer.setAttribute('transform', secondTransform);
+                }, 1000);
+            } 
+            
+            if (isDigital) {
+                this.shadowRoot.appendChild(digitalTemplate.content.cloneNode(true));
+                this.digitalDisplay = this.shadowRoot.querySelector('.digital>span');
+                this.digitalDisplay.textContent = getTimeNow();
+
+                this.timer = setInterval(() => {
+                    this.digitalDisplay.textContent = getTimeNow();
+                }, 1000);
+            }
         }
 
         disconnectedCallback() {
@@ -66,13 +84,8 @@
         return { h, m, s};
     };
 
-    const getHMSFormatted = () => {
-        const {h, m, s} = getHMS();
-        return `${formatNumber(h)}:${formatNumber(m)}:${formatNumber(s)}`;
-    }
-
-    const formatNumber = (n) => {
-        return String(n).padStart(2, '0');
+    const getTimeNow = () => {
+        return new Date().toLocaleTimeString();
     }
 
     window.customElements.define('wc-relogio', WcRelogioElement);
